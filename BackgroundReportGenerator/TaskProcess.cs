@@ -32,7 +32,7 @@ namespace BackgroundReportGenerator
                     {
                         csv.WriteRecords(records);
                     }
-                } while (cursor == null);
+                } while (cursor != null);
                 CallOnCompleteCallback();
             }
         }
