@@ -16,26 +16,27 @@ namespace BackgroundReportGenerator.Test
                 .UseSqlServer("Server=JENZ;Database=LibraryDB;Encrypt=False;TrustServerCertificate=False;Trusted_Connection=True;")
                 .Options;
 
-            var db = new Context(options);
-            TaskManager task = new TaskManager(db);
+            var dbContext = new Context(options);
+            var process = new TaskProcess(dbContext);
 
-            static bool predicate1(User u) => u.Id == 1;
-            var data = new User()
+
+            var tracker = new ReportGenerationTracker()
             {
-                Username = "Kaycee",
+                IsCompleted = true,
             };
-
-            task.SetOnCompleteCallback(() => task.UpdateTracker(predicate1, data));
-
+            process.SetOnCompleteCallback(() =>
+            {
+                process.UpdateTracker((ReportGenerationTracker u) => u.Id == 1, tracker);
+            });
             static bool predicate(User u) => u.Id != 0;
-            await task.PerformDataReadToCSV<User>(predicate, 10, "C://LibraryReport/file.csv");
+            await process.PerformDataReadToCSV<User>(predicate, 10, "C://LibraryReport/file.csv");
         }
 
 
         [Fact]
         static async void StartBackgroundTask()
         {
-            TaskProcess backgroundTask = new();
+            TaskManager backgroundTask = new TaskManager();
 
             await backgroundTask.StartAsync(e => PreformCSVAsync());
         }

@@ -1,43 +1,55 @@
-﻿
-using System;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using CsvHelper;
+using CsvHelper.Configuration;
+using Microsoft.EntityFrameworkCore;
+using System.Globalization;
+
 
 namespace BackgroundReportGenerator
 {
     public class TaskProcess
     {
-        private readonly CancellationTokenSource _cancellationTokenSource;
+        private DataAccessor accessor;
+        private Action onCompleteCallback;
 
-        public TaskProcess()
+        public TaskProcess(DbContext _context)
         {
-            _cancellationTokenSource = new CancellationTokenSource();
+            this.accessor = DataAccessor.GetInstance(_context);
         }
 
-        public async Task StartAsync(Func<CancellationToken, Task> callback)
+        public async Task PerformDataReadToCSV<T>(Func<T, bool> predicate, uint limit, string path) where T : class
         {
-            if (_cancellationTokenSource.Token.IsCancellationRequested)
-            {
-                return;
-            }
+            string cursor = null;
 
-            try
+            using (var writer = new StreamWriter(path))
+            using (var csv = new CsvWriter(writer, new CsvConfiguration(CultureInfo.InvariantCulture)))
             {
-                await callback(_cancellationTokenSource.Token);
-            }
-            catch (OperationCanceledException)
-            {
-                throw new Exception("Break");
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
+                csv.WriteRecords(new List<T>());
+
+                do
+                {
+                    List<T> records = accessor.Fetch(predicate, ref cursor, limit);
+                    if (records.Count > 0)
+                    {
+                        csv.WriteRecords(records);
+                    }
+                } while (cursor == null);
+                CallOnCompleteCallback();
             }
         }
 
-        public void Stop()
+        public void UpdateTracker<T>(Func<T, bool> predicate, T data) where T : class
         {
-            _cancellationTokenSource.Cancel();
+            this.accessor.Update(predicate, data);
+        }
+
+        public void SetOnCompleteCallback(Action callback)
+        {
+            this.onCompleteCallback = callback;
+        }
+
+        private void CallOnCompleteCallback()
+        {
+            onCompleteCallback.Invoke();
         }
     }
 }

@@ -1,55 +1,43 @@
-﻿using CsvHelper;
-using CsvHelper.Configuration;
-using Microsoft.EntityFrameworkCore;
-using System.Globalization;
-
+﻿
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace BackgroundReportGenerator
 {
     public class TaskManager
     {
-        private DataAccessor accessor;
-        private Action onCompleteCallback;
+        private readonly CancellationTokenSource _cancellationTokenSource;
 
-        public TaskManager(DbContext _context)
+        public TaskManager()
         {
-            this.accessor = DataAccessor.GetInstance(_context);
+            _cancellationTokenSource = new CancellationTokenSource();
         }
 
-        public async Task PerformDataReadToCSV<T>(Func<T, bool> predicate, uint limit, string path) where T : class
+        public async Task StartAsync(Func<CancellationToken, Task> callback)
         {
-            string cursor = null;
-
-            using (var writer = new StreamWriter(path))
-            using (var csv = new CsvWriter(writer, new CsvConfiguration(CultureInfo.InvariantCulture)))
+            if (_cancellationTokenSource.Token.IsCancellationRequested)
             {
-                csv.WriteRecords(new List<T>());
+                return;
+            }
 
-                do
-                {
-                    List<T> records = accessor.Fetch(predicate, ref cursor, limit);
-                    if (records.Count > 0)
-                    {
-                        csv.WriteRecords(records);
-                    }
-                } while (cursor == null);
-                CallOnCompleteCallback();
+            try
+            {
+                await callback(_cancellationTokenSource.Token);
+            }
+            catch (OperationCanceledException)
+            {
+                throw new Exception("Break");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
             }
         }
 
-        public void UpdateTracker<T>(Func<T, bool> predicate, T data) where T : class
+        public void Stop()
         {
-            this.accessor.Update(predicate, data);
-        }
-
-        public void SetOnCompleteCallback(Action callback)
-        {
-            this.onCompleteCallback = callback;
-        }
-
-        private void CallOnCompleteCallback()
-        {
-            onCompleteCallback.Invoke();
+            _cancellationTokenSource.Cancel();
         }
     }
 }

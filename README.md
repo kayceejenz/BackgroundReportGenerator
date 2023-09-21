@@ -50,14 +50,14 @@ var process = new TaskProcess(dbContext);
 Set an action to execute when the background task is complete.
 
 ```csharp
-var data = new User()
+var tracker = new ReportGenerationTracker()
 {
-    Username = "Kaycee",
+    IsCompleted = true,
 };
 
 process.SetOnCompleteCallback(() =>
 {
-    process.UpdateTracker((User u) => u.Id == 1, data);
+    process.UpdateTracker((ReportGenerationTracker u) => u.Id == 1, tracker);
 });
 ```
 
