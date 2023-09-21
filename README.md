@@ -1,22 +1,20 @@
-# Background Report Generator Library
+# `Background Report Generator Library`
 
 The Background Report Generator Library is a .NET library that allows you to generate CSV reports from a database in the background. It provides a flexible way to fetch data from a database, generate CSV files, and execute custom actions upon completion.
 
-## Table of Contents
+## `Table of Contents`
 
-- [Getting Started](#getting-started)
-     - [Prerequisites](#prerequisites)
-- [Usage](#usage)
-     - [Initialization](#initialization)
-     - [Database Context](#database-context)
-     - [Predicates and Data Objects](#predicates-and-data-objects)
-     - [Callback Actions](#callback-actions)
-     - [Fetching Data](#fetching-data)
-     - [Running the Background Task](#running-the-background-task)
-- [Contributing](#contributing)
-- [License](#license)
+- [`Getting Started`](#getting-started)
+     - [`Prerequisites`](#prerequisites)
+- [`Usage`](#usage)
+     - [`Database Context`](#database-context)
+     - [`Initialization`](#initialization)
+     - [`Predicates and Data Objects`](#predicates-and-data-objects)
+     - [`Callback Actions`](#callback-actions)
+     - [`Fetching Data`](#fetching-data)
+     - [`Running the Background Task`](#running-the-background-task)
 
-## Getting Started
+## `Getting Started`
 
 ### Prerequisites
 
@@ -26,9 +24,9 @@ To use this library, you'll need the following:
 - Microsoft Entity Framework Core.
 - CsvHelper library.
 
-## Usage
+## `Usage`
 
-### Database Context
+### `Database Context`
 
 Create a database context that inherits from DbContext and configure it for your database connection.
 
@@ -40,7 +38,7 @@ var options = new DbContextOptionsBuilder<YourDbContext>()
 var dbContext = new YourDbContext(options);
 ```
 
-### Initialisation
+### `Initialisation`
 
 Initialize the TaskManager using your database context.
 
@@ -48,7 +46,7 @@ Initialize the TaskManager using your database context.
 var process = new TaskProcess(dbContext);
 ```
 
-### Predicates and Data Objects
+### `Predicates and Data Objects`
 
 Define predicates and data objects for your database queries and updates.
 
@@ -62,7 +60,7 @@ var data = new User()
 
 You can create custom predicates and data objects to tailor your database operations.
 
-### Callback Actions
+### `Callback Actions`
 
 Set an action to execute when the background task is complete.
 
@@ -75,7 +73,7 @@ taskManager.SetOnCompleteCallback(() =>
 
 This action will be executed when the background task, such as generating a CSV report, is completed.
 
-### Running the Background Task
+### `Running the Background Task`
 
 Define a predicate for fetching data from the database and specify a limit for records.
 
