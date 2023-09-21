@@ -9,7 +9,6 @@ The Background Report Generator Library is a .NET library that allows you to gen
 - [`Usage`](#usage)
      - [`Database Context`](#database-context)
      - [`Initialization`](#initialization)
-     - [`Predicates and Data Objects`](#predicates-and-data-objects)
      - [`Callback Actions`](#callback-actions)
      - [`Fetching Data`](#fetching-data)
      - [`Running the Background Task`](#running-the-background-task)
