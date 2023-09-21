@@ -46,28 +46,19 @@ Initialize the TaskManager using your database context.
 var process = new TaskProcess(dbContext);
 ```
 
-### `Predicates and Data Objects`
-
-Define predicates and data objects for your database queries and updates.
-
-```csharp
-static bool Predicate1(User u) => u.Id == 1;
-var data = new User()
-{
-    Username = "Kaycee",
-};
-```
-
-You can create custom predicates and data objects to tailor your database operations.
-
 ### `Callback Actions`
 
 Set an action to execute when the background task is complete.
 
 ```csharp
-taskManager.SetOnCompleteCallback(() =>
+var data = new User()
 {
-    process.UpdateTracker(Predicate1, data);
+    Username = "Kaycee",
+};
+
+process.SetOnCompleteCallback(() =>
+{
+    process.UpdateTracker((User u) => u.Id == 1, data);
 });
 ```
 
@@ -86,7 +77,7 @@ static bool Predicate(User u) => u.Id != 0;
 uint limit = 10;
 
 var path = "C://LibraryUserReport/file.csv";
-taskManager.PerformDataReadToCSV(Predicate, limit, path);
+process.PerformDataReadToCSV(Predicate, limit, path);
 ```
 
 Specify the path where the generated CSV report will be saved and provide the predicate and limit for data retrieval.
