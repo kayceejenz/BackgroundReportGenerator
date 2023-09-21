@@ -50,15 +50,14 @@ var process = new TaskProcess(dbContext);
 Set an action to execute when the background task is complete.
 
 ```csharp
-var tracker = new ReportGenerationTracker()
-{
-    IsCompleted = true,
-};
-
+   var tracker = new ReportGenerationTracker()
+            {
+                IsCompleted = true,
+            };
 process.SetOnCompleteCallback(() =>
-{
-    process.UpdateTracker((ReportGenerationTracker u) => u.Id == 1, tracker);
-});
+            {
+                process.UpdateTracker((ReportGenerationTracker u) => u.Id == 1, tracker);
+            });
 ```
 
 This action will be executed when the background task, such as generating a CSV report, is completed.
@@ -73,10 +72,7 @@ Start the background task to generate CSV reports.
 
 ```csharp
 static bool Predicate(User u) => u.Id != 0;
-uint limit = 10;
-
-var path = "C://LibraryUserReport/file.csv";
-process.PerformDataReadToCSV(Predicate, limit, path);
+await process.PerformDataReadToCSV<User>(predicate, 10, "C://LibraryReport/file.csv");
 ```
 
 Specify the path where the generated CSV report will be saved and provide the predicate and limit for data retrieval.
