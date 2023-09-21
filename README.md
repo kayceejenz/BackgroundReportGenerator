@@ -79,7 +79,7 @@ Specify the path where the generated CSV report will be saved and provide the pr
 
 ```csharp
 var backgroundTask = new TaskManager();
-backgroundTask.StartAsync(async (cancellationToken) =>
+await backgroundTask.StartAsync(async (cancellationToken) =>
 {
     await PreformCSVAsync();
 });

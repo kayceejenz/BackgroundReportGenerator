@@ -37,7 +37,7 @@ namespace BackgroundReportGenerator.Test
         static async void StartBackgroundTask()
         {
             var backgroundTask = new TaskManager();
-            backgroundTask.StartAsync(async (cancellationToken) =>
+            await backgroundTask.StartAsync(async (cancellationToken) =>
             {
                 await PreformCSVAsync();
             });
